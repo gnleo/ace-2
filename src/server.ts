@@ -1,5 +1,14 @@
+import fastifySwagger from "@fastify/swagger";
+import scalarAPIReference from "@scalar/fastify-api-reference";
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import {
+  jsonSchemaTransform,
+  serializerCompiler,
+  validatorCompiler,
+  ZodTypeProvider,
+} from "fastify-type-provider-zod";
+import { createModalityRoute } from "./routes/modality/create-modality";
+import { createTutorRoute } from "./routes/tutor/create-tutor";
 
 const server = fastify({
   logger: {
@@ -13,8 +22,30 @@ const server = fastify({
   },
 }).withTypeProvider<ZodTypeProvider>();
 
+if (process.env.NODE_ENV === "development") {
+  server.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: "API gerenciamento de eventos esportivos",
+        version: "1.0.0",
+      },
+    },
+    transform: jsonSchemaTransform,
+  });
+
+  server.register(scalarAPIReference, {
+    routePrefix: "/docs",
+  });
+}
+
+server.setValidatorCompiler(validatorCompiler);
+server.setSerializerCompiler(serializerCompiler);
+
 server.get("/health", (_request: FastifyRequest, reply: FastifyReply) => {
   return reply.status(200).send();
 });
+
+server.register(createModalityRoute);
+server.register(createTutorRoute);
 
 export { server };

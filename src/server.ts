@@ -9,6 +9,8 @@ import {
 } from "fastify-type-provider-zod";
 import { createModalityRoute } from "./routes/modality/create-modality";
 import { createTutorRoute } from "./routes/tutor/create-tutor";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
 
 const server = fastify({
   logger: {
@@ -21,6 +23,13 @@ const server = fastify({
     },
   },
 }).withTypeProvider<ZodTypeProvider>();
+
+server.register(fastifyMultipart);
+
+server.register(fastifyStatic, {
+  root: `${__dirname}/../uploads`,
+  prefix: "/file/",
+});
 
 if (process.env.NODE_ENV === "development") {
   server.register(fastifySwagger, {

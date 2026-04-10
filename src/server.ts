@@ -11,6 +11,11 @@ import { createModalityRoute } from "./routes/modality/create-modality";
 import { createTutorRoute } from "./routes/tutor/create-tutor";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyStatic from "@fastify/static";
+import { createPlayerRoute } from "./routes/player/create-player";
+import { patchAvatarPlayerRoute } from "./routes/player/patch-avatar-player";
+import { registerTeamPlayersRoute } from "./routes/teams/record-players-team";
+import { listAllTeamRoute } from "./routes/teams/list-all-team";
+import { createTeamRoute } from "./routes/teams/create-team";
 
 const server = fastify({
   logger: {
@@ -56,5 +61,12 @@ server.get("/health", (_request: FastifyRequest, reply: FastifyReply) => {
 
 server.register(createModalityRoute);
 server.register(createTutorRoute);
+
+server.register(createPlayerRoute);
+server.register(patchAvatarPlayerRoute);
+
+server.register(createTeamRoute);
+server.register(registerTeamPlayersRoute);
+server.register(listAllTeamRoute);
 
 export { server };
